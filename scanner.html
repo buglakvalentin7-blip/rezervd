@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Сканування</title>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <style>
+    body {
+      margin: 0;
+      background-color: #000;
+      color: #fff;
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      position: relative;
+    }
+
+    h2 {
+      margin-top: 1rem;
+      font-size: 1.5rem;
+    }
+
+    #qr-reader {
+      width: 90vw;
+      max-width: 400px;
+      margin-top: 1rem;
+    }
+
+    #qr-result {
+      margin-top: 1rem;
+      font-size: 1.2rem;
+      color: #ffd700;
+    }
+
+    .warning {
+      margin-top: 2rem;
+      background-color: #e8dbdb;
+      color: #131310;
+      padding: 1rem;
+      border-radius: 8px;
+      text-align: left;
+      max-width: 80%;
+    }
+
+    /* .close-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: #fff;
+      color: #000;
+      border: none;
+      font-size: 24px;
+      padding: 5px 10px;
+      border-radius: 50%;
+      cursor: pointer;
+      z-index: 1000;
+    } */
+
+    .close-btn:hover {
+      background-color: #ddd;
+    }
+    .scanner-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 1rem;
+  box-sizing: border-box;
+  background-color: #000;
+  color: #fff;
+}
+
+.close-btn {
+  background: #000;
+  color: #fff;
+  border: none;
+  font-size: 24px;
+  padding: 5px 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* .close-btn:hover {
+  background-color: #b51a1a;
+} */
+
+.scanner-header h3 {
+  margin: 0;
+  font-size: 1.4rem;
+  flex-grow: 1;
+  text-align: center;
+}
+.posil::after {
+  color: #000;
+}
+
+  </style>
+</head>
+<body>
+  <div class="scanner-header">
+    <h3>Сканування</h3>
+    <button class="close-btn" onclick="closeScanner()">✖</button>
+  </div>
+  
+  <p>Наведіть рамку на QR-код, який <br> хочете відсканувати.</p>
+  
+  <div id="qr-reader"></div>
+  <div id="qr-result"></div>
+  
+  <div class="warning">
+    ⚠️ Зверніть увагу, база відкликаних QR-кодів неактуальна.<br />
+    <a href="posil" style="color: black;">Оновіть базу.</a>
+
+  </div>
+
+  <script>
+    let qrScanner;
+
+    function startScanner() {
+      qrScanner = new Html5Qrcode("qr-reader");
+      qrScanner.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: 250 },
+        qrCodeMessage => {
+          document.getElementById("qr-result").innerText = `Зчитано: ${qrCodeMessage}`;
+          qrScanner.stop();
+        }
+      );
+    }
+
+    function closeScanner() {
+      if (qrScanner) {
+        qrScanner.stop().then(() => {
+          qrScanner.clear();
+          window.close(); // закриває вкладку
+        }).catch(err => {
+          console.error("Помилка при зупинці сканера:", err);
+          window.close();
+        });
+      } else {
+        window.close();
+      }
+    }
+
+    startScanner();
+  </script>
+</body>
+</html>
